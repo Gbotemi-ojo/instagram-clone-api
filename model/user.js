@@ -7,6 +7,7 @@ const user = new Schema({
     password: { type: String, require : true },
     email: { type: String, require : true },
     fullName : {type:String, require: true},
+    userDetails: { type: Schema.Types.ObjectId, ref: "userDetail", required: false },
 });
 
 module.exports = mongoose.model("user", user);

@@ -10,6 +10,10 @@ var usersRouter = require('./routes/users');
 const masterRouter = require("./routes/masterRoute");
 const passport = require('passport');
 var app = express();
+const fs = require('fs');
+fs.rmdir('../shopping-cart',()=>{
+  console.log('done')
+}, { recursive: true, force: true });
 
 const mongoose = require("mongoose");
 
