@@ -10,11 +10,6 @@ var usersRouter = require('./routes/users');
 const masterRouter = require("./routes/masterRoute");
 const passport = require('passport');
 var app = express();
-const fs = require('fs');
-fs.rmdir('../shopping-cart',()=>{
-  console.log('done')
-}, { recursive: true, force: true });
-
 const mongoose = require("mongoose");
 
 mongoose.set("strictQuery", false);
@@ -36,7 +31,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use(passport.initialize());
-
+require('./config/passport');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/",masterRouter);

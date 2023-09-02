@@ -11,8 +11,8 @@ const post = new Schema({
     },
     caption : {type : String},
     date_posted: { type: Date },
-    likes: { type: Schema.Types.ObjectId, ref: "postLike", required: false },
-    comments: { type: Schema.Types.ObjectId, ref: "comment", required: false }
+    likes: { type: Schema.Types.ObjectId, ref: "postLike", required: false,default : 0 },
+    comments: { type: Schema.Types.ObjectId, ref: "comment", required: false,default : 0 }
 });
 
 module.exports = mongoose.model("post", post);

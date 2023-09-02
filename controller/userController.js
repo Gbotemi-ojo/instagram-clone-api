@@ -6,15 +6,15 @@ const jwt = require('jsonwebtoken');
 const { compareSync } = require('bcryptjs');
 require('../config/passport');
 exports.sign_up = [
-    body("username", "username name must be minimum of 3 characters")
+    body("username", "username name must be minimum of 4 characters")
         .trim()
-        .isLength({ min: 3 })
+        .isLength({ min: 4 })
         .escape(),
     body("password", "password must be at least 8 characters long")
         .trim()
         .isLength({ min: 8 })
         .escape(),
-    body("email", "password field is required")
+    body("email", "email field is required")
         .trim()
         .isLength({ min: 1 }),
     body("fullname", "enter your full name to complete registration")
@@ -32,9 +32,9 @@ exports.sign_up = [
                     email: req.body.email,
                 });
                 if (!errors.isEmpty()) {
-                    res.json({
-                        errors: errors.array()
-                    })
+                    res.status(403).json({
+                        error : errors.array()
+                    });
                     return;
                 }
                 else {
@@ -52,7 +52,7 @@ exports.sign_up = [
                     }
                     else {
                         await sign_up.save();
-                        res.status(403).json({
+                        res.status(201).json({
                             message: "sign up successful!"
                         })
                     }
@@ -64,35 +64,35 @@ exports.sign_up = [
     })]
 
 exports.sign_in = [
-    body("username", "username cannot be empty")
+    body("username", "username is expected to be 4 characters or more")
         .trim()
-        .isLength({ min: 1 })
-        .escape(),
+        .isLength({ min: 4 }),
     body("password", "password must be at least 8 characters long")
         .trim()
-        .isLength({ min: 8 })
-        .escape(),
+        .isLength({ min: 8 }),
     asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req);
         try {
-            const user = await userModel.findOne({username : req.body.username});
-            if(!user ){
+            if (!errors.isEmpty()) {
                 res.status(403).json({
-                    message : "This account does not exists"
+                    error: errors.array()
                 });
                 return;
             }
+            const user = await userModel.findOne({username : req.body.username});
+            if(!user ){
+                res.status(403).json("This account does not exists")
+                return;
+            }
             if (!compareSync(req.body.password, user.password)) {
-                return res.status(401).send({
-                    success: false,
-                    message: "Incorrect password"
-                })
+                return res.status(403).json("Incorrect password")
             }
             const payload = {
                 username: user.username,
                 id: user._id
             }
             const token = jwt.sign(payload, "Random string", { expiresIn: "1d" });
-            return res.status(200).send({
+            return res.status(200).json({
                 success: true,
                 message: "Logged in successfully!",
                 token: "Bearer " + token
