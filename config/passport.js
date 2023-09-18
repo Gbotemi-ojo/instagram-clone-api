@@ -11,7 +11,7 @@ passport.use(new JwtStrategy(opts, async function (jwt_payload, done) {
     let user = await UserModel.findOne({ id: jwt_payload._id });
     if(user){
         return done(null, user);
-    }
+    }       
     else{
         return done(null, false);
     }
